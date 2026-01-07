@@ -1,6 +1,4 @@
 const errorHandler = (err, req, res, next) => {
-    // For developers
-    console.log(err);
 
     // Mongoose Validation Errors
     if(err.name === "ValidationError") {

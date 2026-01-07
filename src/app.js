@@ -2,18 +2,16 @@ const express = require("express");
 const { connectDb } = require("./config/db");
 const User = require("./models/user");
 const { validateSignUpData } = require("./utils/validation");
-const bcrypt = require("bcrypt");
 const validator = require('validator');
 const { errorHandler } = require("./middlewares/errorHandler");
 const cookieParser = require("cookie-parser");
-const jwt = require("jsonwebtoken");
+const { userAuth } = require("./middlewares/auth");
 
 const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
 
-// post the user data 
 app.post("/signup", async (req, res, next) => {
     const { firstName, lastName, emailId, password, age, gender, photoUrl, about, skills } = req.body;
     try {
@@ -42,7 +40,6 @@ app.post("/signup", async (req, res, next) => {
     }
 })
 
-// login api
 app.post("/login", async (req, res, next) => {
     const { emailId, password } = req.body;
     try {
@@ -56,13 +53,15 @@ app.post("/login", async (req, res, next) => {
         if(!user) {
             throw new Error("Invalid Credentials");
         }
-        const isValidPass = await bcrypt.compare(password, user.password);
-        if(!isValidPass) {
+        const isPasswordValid = await user.isPasswordValid(password);
+        if(!isPasswordValid) {
             throw new Error("Invalid Credentials");
         } else {
-            const token = await jwt.sign({ _id: user._id }, "DEV@Tinder$2811");
-            console.log("Token = ", token);
-            res.cookie("token", token);
+            const token = await user.getJwt();
+            res.cookie("token", token, {
+                expires: new Date(Date.now() + 8 * 3600000),
+                httpOnly: true
+            });
             res.status(201).json({
                 success: true,
                 message: "Login Successful",
@@ -73,25 +72,10 @@ app.post("/login", async (req, res, next) => {
     }
 })
 
-app.get("/profile", async (req, res, next) => {
-    const token = req.cookies?.token;
-    if (!token) {
-        return res.status(401).json({
-            success: false,
-            message: "Authentication required. Please log in."
-        })
-    } 
+app.get("/profile", userAuth, async (req, res, next) => {
     try {
-        const decodedMessage = await jwt.verify(token, "DEV@Tinder$2811");
-        console.log(decodedMessage);
-        const user = await User.findById(decodedMessage._id);
-        if(!user) {
-            return res.status(404).json({
-                success: false,
-                message: "Please Sign Up"
-            })
-        }
-        res.status(201).json({
+        const user = req.user;
+        res.status(200).send({
             success: true,
             user: user
         })
@@ -100,100 +84,6 @@ app.get("/profile", async (req, res, next) => {
     }
 })
 
-//  get the user by email id
-app.get("/user", async (req, res, next) => {
-    const email = req.body?.emailId;
-    try {
-        const isEmailValid = validator.isEmail(email);
-        if (!isEmailValid) {
-            throw new Error("Invalid Email");
-        }
-        const user = await User.findOne({emailId: email});
-        if (!user) {
-            throw new Error("User Not Found")
-        } else {
-            res.status(200).json({
-                success: true,
-                message: "User Found",
-                User: user
-            })
-        }
-    } catch(err) {
-        next(err);
-    }
-})
-
-// Feed API - get all the users from the database
-app.get("/feed", async (req, res, next) => {
-    try {
-        const users = await User.find({});
-        if(!users.length) {
-            throw new Error("Users Not Found");
-        } else {
-            res.status(200).json({
-                success: true,
-                users: users
-            })
-        }
-    } catch (err) {
-        next(err);
-    }
-})
-
-// delete User
-app.delete("/user/:userId", async (req, res, next) => {
-    const { userId } = req.params;
-    try {
-        const user = await User.findByIdAndDelete(userId);
-        if(!user) {
-            throw new Error("User not Found");
-        } else {
-            res.status(200).json({
-                success: true,
-                message: "User Deleted Successfully",
-                user: user
-            })
-        }
-    } catch (err) {
-        next(err);
-    }
-})
-
-// Update user data
-app.patch("/user/:userId", async (req, res, next) => {
-    const data = req.body;
-    const userId = req.params?.userId;
-
-    try {
-        const ALLOWED_UPDATES = [
-            "gender", "age", "photoUrl", "about", "skills"
-        ]
-        const isUpdateAllowed = Object.keys(data).every(k => ALLOWED_UPDATES.includes(k));
-        if (!isUpdateAllowed) {
-            throw new Error("Update Not Allowed");
-        }
-
-        const oldUser = await User.findByIdAndUpdate(userId, data, {
-            new:false,
-            runValidators: true
-        });
-        if(!oldUser) {
-            throw new Error("User not Found");
-        } else {
-            const newUser = await User.findById(userId);
-            res.json({
-                success: true,
-                message: "User Updated Successfully",
-                before: oldUser,
-                after: newUser
-            })
-        }
-    } catch (err) {
-        next(err);
-    }
-})
-
-// error handler middleware
 app.use(errorHandler);
 
 connectDb()
