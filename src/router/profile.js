@@ -51,7 +51,7 @@ profileRouter.patch("/profile/password", userAuth, async (req, res, next) => {
         }
         const hashPassword = await req.user?.getHash(password);
         await User.findByIdAndUpdate(
-            req.user?._id, { $set: { password: hashPassword} }
+            req.user?._id, { password: hashPassword }, { runValidators: true }
         );
         res.status(200).json({
             success: true,
