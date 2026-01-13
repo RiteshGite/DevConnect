@@ -1,148 +1,120 @@
-# DevTinder Project - API Development and Express Router
-
-## Overview
-Today's learning focused on finalizing the DevTinder API endpoints and structuring the application using Express Router for better modularity and maintainability. The APIs were categorized into different routers based on their functionality.
+# 🚀 DevTinder – Backend API Documentation
 
 ---
 
-## 1. DevTinder API Endpoints
+## 🔐 Auth Router (`/auth`)
 
-### Auth Router
-Handles user authentication, including signup, login, and logout.
-- **POST `/signup`**: Register a new user.
-- **POST `/login`**: Authenticate a user and issue a token.
-- **POST `/logout`**: Revoke the user's session.
-
----
-
-### Profile Router
-Manages user profile-related operations.
-- **GET `/profile/view`**: Retrieve the profile information of the logged-in user.
-- **PATCH `/profile/edit`**: Update user profile details.
-- **PATCH `/profile/password`**: Change the user's password.
+| Method | Endpoint | Description |
+|------|---------|------------|
+| POST | /auth/signup | Register a new user |
+| POST | /auth/login | Login user and issue JWT |
+| POST | /auth/logout | Logout user (clear cookie) |
+| POST | /auth/forgot-password | Send password reset link |
+| POST | /auth/reset-password | Reset password using token |
 
 ---
 
-### Connection Request Router
-Handles connection requests between users with various statuses:
-- **Status Options**: `ignore`, `interested`, `accepted`, `rejected`.
-- **Endpoints**:
-  - **POST `/request/send/intrested/:userId`**: Send a connection request to another user.
-  - **POST `/request/ignored/:userId`**: Mark a request as ignored.
-  - **POST `/request/review/accepted/:requestId`**: Accept a connection request.
-  - **POST `/request/review/rejected/:requestId`**: Reject a connection request.
+## 👤 Profile Router (`/profile`)
+
+| Method | Endpoint | Description |
+|------|---------|------------|
+| GET | /profile/view | View logged-in user profile |
+| PATCH | /profile/edit | Edit allowed profile fields |
+| PATCH | /profile/password | Change user password |
+| DELETE | /profile/delete | Delete user account |
 
 ---
 
-### User Router
-Handles operations related to connections, requests, and the user feed.
-- **GET `/user/connections`**: Get a list of connections for the logged-in user.
-- **GET `/user/requests/received`**: Retrieve a list of received connection requests.
-- **GET `/user/feed`**: Get a list of suggested users to connect with.
+## 🤝 Connection Request Router (`/request`)
+
+| Method | Endpoint | Description |
+|------|---------|------------|
+| POST | /request/send/interested/:userId | Send connection request |
+| POST | /request/send/ignored/:userId | Ignore a user |
+| POST | /request/review/accepted/:requestId | Accept connection request |
+| POST | /request/review/rejected/:requestId | Reject connection request |
 
 ---
 
-## 2. Structuring with Express Router
+## 👥 User Router (`/user`)
 
-### Key Concepts:
-1. **Creating a Routes Folder**:
-   - Organize the API endpoints into separate route files for each functionality (e.g., `authRoutes.js`, `profileRoutes.js`).
-
-2. **Using Express Router**:
-   - Leverage the `express.Router()` to define routes in a modular way.
-   - Each route file exports its router, which is then mounted to a specific path in the main application file.
-
-```javascript
-    const express = require("express");
-    const profileRouter = express.Router();
-    const { userAuth } = require("../Middlewares/auth");
-
-
-    //profile API to get the profile details
-    profileRouter.get("/profile", userAuth, async (req, res) => {
-        const user = req.user;
-        res.send(user);
-    });
-
-    module.exports = profileRouter;
-```
-
-### Benefits of Using Express Router:
-- **Modularity**: Separate files for each router improve code organization and readability.
-- **Scalability**: Easier to maintain and expand as the application grows.
-- **Reusability**: Common middleware and logic can be reused across routes.
+| Method | Endpoint | Description |
+|------|---------|------------|
+| GET | /user/feed | Get suggested users |
+| GET | /user/connections | Get accepted connections |
+| GET | /user/requests/received | Get received requests |
+| GET | /user/requests/sent | Get sent requests |
 
 ---
 
-## Overview
-Today's learning focuses on building key APIs for the DevTinder app:  
-1. A **Logout API** to securely log users out.  
-2. A **Profile/Edit API** to update user information while maintaining validation and security.
+## 💬 Chat Router (`/chat`)
+
+| Method | Endpoint | Description |
+|------|---------|------------|
+| GET | /chat/:matchId | Fetch chat history |
+| POST | /chat/:matchId/message | Send a message |
 
 ---
 
-## 1. Logout API
+## 🧠 Skills Router (`/skills`)
 
-### Key Features:
-- **Purpose**: Log users out by clearing their authentication cookies.
-- **Implementation**:
-  - Use the `res.cookie` method to set the cookie storing the JWT token to `null`.
-  - Ensure the cookie is securely cleared by setting appropriate attributes (e.g., `httpOnly`, `secure`).
-
-```javascript
-  authRouter.post("/logout", async (req, res) => {
-    res
-        .cookie("token", null, {
-            expires: new Date(Date.now())
-        })
-        .send("User Logged out successfully")
-})
-```
-
-### Benefits:
-- Ensures a secure and seamless logout process.
-- Prevents unauthorized access by invalidating the session.
+| Method | Endpoint | Description |
+|------|---------|------------|
+| GET | /skills | Get all skills |
+| POST | /skills | Add new skill (admin only) |
 
 ---
 
-## 2. Profile/Edit API
+## 📂 Projects Router (`/projects`)
 
-### Key Features:
-- **Purpose**: Allow users to update their profile information.
-- **Validation**:
-  - Implement checks to ensure only specific fields (e.g., `firstName`, `about`, `profileURL` etc) can be updated.
-  - Prevent updates to sensitive or immutable fields like `password` or `_id`.
-- **Security**:
-  - Validate all incoming data to ensure it meets predefined criteria (e.g., length, format).
-  - Sanitize inputs to prevent injection attacks or unintended updates.
-
-```javascript
-  profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
-    try {
-        if (!validateEditFields(req)) {
-            throw new Error("Invalid Edit request")
-        }
-        const loggedInUser = req.user;
-        Object.keys(req.body).forEach(key => (loggedInUser[key] = req.body[key]))
-        await loggedInUser.save();
-        res.json({
-            message: ` ${loggedInUser.firstName}, your profile updated successfully`,
-            data: loggedInUser
-        })
-    }
-    catch (err) {
-        res.status(400).send("ERROR : " + err.message);
-    }
-})
-```
-
-### Benefits:
-- Maintains data integrity by restricting updates to allowable fields.
-- Provides a secure mechanism for users to manage their profile information.
+| Method | Endpoint | Description |
+|------|---------|------------|
+| POST | /projects | Add a project |
+| GET | /projects/:userId | Get user projects |
+| PATCH | /projects/:projectId | Update project |
+| DELETE | /projects/:projectId | Delete project |
 
 ---
 
-## Conclusion
-This structured approach to API development ensures that the DevTinder backend is organized, maintainable, and scalable. Using Express Router and clearly defined endpoints simplifies future feature additions and debugging.
+## 🔔 Notifications Router (`/notifications`)
 
+| Method | Endpoint | Description |
+|------|---------|------------|
+| GET | /notifications | Get notifications |
+| PATCH | /notifications/read | Mark notifications as read |
 
+---
+
+## 🚫 Safety Router (`/safety`)
+
+| Method | Endpoint | Description |
+|------|---------|------------|
+| POST | /safety/block/:userId | Block a user |
+| POST | /safety/report/:userId | Report a user |
+| GET | /safety/blocked-users | Get blocked users list |
+
+---
+
+## 🛠️ Admin Router (`/admin`)
+
+| Method | Endpoint | Description |
+|------|---------|------------|
+| GET | /admin/users | Get all users |
+| DELETE | /admin/users/:userId | Delete a user |
+| GET | /admin/reports | View reported users |
+
+---
+
+## ✅ Summary
+
+- Total Routers: 10  
+- Total APIs: 40+  
+- Architecture: Modular Express Router  
+- Authentication: JWT + HTTP-only cookies  
+
+---
+
+## 👨‍💻 Author
+
+**Ritesh Gite**  
+Backend Developer | MERN Stack
