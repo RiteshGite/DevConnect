@@ -37,12 +37,6 @@ const userSchema = mongoose.Schema({
         type: String,
         enum: ["male", "female", "others"],
         lowercase: true,
-
-        // validate(value) {
-        //     if(!["male", "female", "others"].includes(value)) {
-        //         throw new Error("Gender Data is not Valid");
-        //     }
-        // }
     },
     age: {
         type: Number,

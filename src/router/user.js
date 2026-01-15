@@ -5,7 +5,6 @@ const User = require("../models/user");
 
 const userRouter = express.Router();
 
-// get all the pending connection requests for the loggedInUser
 userRouter.get("/user/requests/received", userAuth, async (req, res, next) => {
     try {
         const loggedInUserId = req.user?._id;
@@ -118,17 +117,3 @@ userRouter.get("/feed", userAuth, async (req, res, next) => {
 })
 
 module.exports = userRouter;
-
-
-
-/*
-page = 1 & limit = 10   skip = 0
-page = 2 & limit = 10   skip = 10
-page = 3 & limit = 10   skip = 20
-
-1-1 * 10 = 0
-2-1 * 10 = 10
-3-1 * 10 = 20 
-
-so, skip = (page -1) * limit
-*/
