@@ -1,6 +1,7 @@
 const express = require("express");
 const ConnectionRequest = require("../models/connectionRequest");
 const { userAuth } = require("../middlewares/auth");
+const User = require("../models/user");
 
 const userRouter = express.Router();
 
@@ -65,6 +66,46 @@ userRouter.get("/user/connections", userAuth, async (req, res, next) => {
             success: true,
             totalConnections: connections.length,
             connections: data
+        })
+    } catch (err) {
+        next(err);
+    }
+})
+
+userRouter.get("/user/feed", userAuth, async (req, res, next) => {
+    const USER_SAFE_FIELD = "firstName lastName gender age photoUrl about skills";
+    try {
+        const loggedInUserId = req.user?._id;
+        const connectionRequests = await ConnectionRequest.find({
+            $or: [
+                { fromUserId: loggedInUserId },
+                { toUserId: loggedInUserId }
+            ]
+        }).select("fromUserId toUserId")
+
+        const hideUsersFromFeed = connectionRequests.map(obj => {
+            if(obj.fromUserId.toString() === loggedInUserId.toString()) {
+                return obj.toUserId;
+            }
+            return obj.fromUserId;
+        })
+
+        const showUsersInFeed = await User.find({
+            $and: [
+                {_id: {$nin: hideUsersFromFeed } },
+                {_id: {$ne: loggedInUserId } }
+            ]
+        }).select(USER_SAFE_FIELD);
+
+        if(!showUsersInFeed.length) {
+            return res.status(200).json({
+                success: true,
+                message: "No Users Found"
+            })
+        }
+        res.status(200).json({
+            success: true,
+            feed: showUsersInFeed
         })
     } catch (err) {
         next(err);
