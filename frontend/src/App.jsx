@@ -5,6 +5,7 @@ import Feed from "./components/Feed";
 import Profile from "./components/Profile";
 import { Provider } from "react-redux";
 import appStore from "./utils/appStore";
+import Error from "./components/Error";
 
 const App = () => {
   return (
@@ -13,10 +14,12 @@ const App = () => {
         <BrowserRouter basename="/">
           <Routes>
             <Route path="/" element={<Body />}>
-              <Route path="/login" element={<Login />} />
-              <Route path="/feed" element={<Feed />} />
-              <Route path="/profile" element={<Profile />} />
+              <Route path="login" element={<Login />} />
+              <Route path="feed" element={<Feed />} />
+              <Route path="profile" element={<Profile />} />
             </Route>
+            {/* for all the invalid routes */}
+            <Route path="*" element={<Error />} />
           </Routes>
         </BrowserRouter>
       </Provider>

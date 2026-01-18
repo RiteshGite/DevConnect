@@ -20,7 +20,7 @@ const Login = () => {
         `${BASE_URL}/login`,
         { emailId, password },
         { withCredentials: true }
-      );
+      ); 
       dispatch(addUser(res.data?.user));
       navigate("/feed");
     } catch (err) {
