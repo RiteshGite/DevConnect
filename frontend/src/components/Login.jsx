@@ -1,28 +1,34 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import axios from "axios";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addUser } from "../utils/userSlice";
 import { useNavigate } from "react-router-dom";
 import { BASE_URL } from "../utils/constants";
 
 const Login = () => {
+
   const [emailId, setEmail] = useState("hitesh.dev@gmail.com");
   const [password, setPassword] = useState("Dev@12345");
   const [showPassword, setShowPassword] = useState(false);
 
   const dispatch = useDispatch();
+
   const navigate = useNavigate();
+  const user = useSelector((store) => store.user);
+  if(user) {
+    return navigate("/feed");
+  }
 
   const handleLoginBtn = async () => {
     try {
       const res = await axios.post(
-        `${BASE_URL}/login`,
+        `${BASE_URL} + /login`,
         { emailId, password },
         { withCredentials: true }
       ); 
       dispatch(addUser(res.data?.user));
-      navigate("/feed");
+      navigate("/feed", { replace: true });
     } catch (err) {
       console.log(err);
     }
