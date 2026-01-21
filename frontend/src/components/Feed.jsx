@@ -1,28 +1,54 @@
 import { useState, useEffect } from "react";
-import toast from "react-hot-toast";
 import { BASE_URL } from "../utils/constants";
+import { useSelector, useDispatch } from "react-redux";
+import { addFeed } from "../utils/feedSlice";
+import { Navigate } from "react-router-dom";
 import axios from "axios";
+import Shimmer from "./Simmer";
+import UserCard from "./UserCard"
 
 const Feed = () => {
-  const [error, setError] = useState();
-  const fetchFeed = async () => {
+
+  const feed = useSelector((store) => store.feed);
+  const dispatch = useDispatch();
+
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+  
+  const getFeed = async () => {
     try {
+      if(feed) return;
       const res = await axios.get(`${BASE_URL}/feed`, { withCredentials: true });
-      console.log(res);
+      if (res.data.message === "No Users Found") {
+        setError("You have seen all the Developers")
+      } else {
+        dispatch(addFeed(res.data?.feed)); 
+      }
+      setLoading(false);
     } catch (err) {
-      setError("You have seen all the Feed");
-      toast.error("You have seen all the Feed");
+      if(err) {
+        return <Navigate to="/error" />;
+      }
     }
   }
   useEffect(() => {
-    fetchFeed();
+    getFeed();
   }, []);
 
-  return (
-    <div>
-      This is the feed
+  if(loading && !feed) return (
+    <div className="p-16 flex justify-center items-center">
+      <Shimmer count={1}/>
     </div>
-  )
+  );
+
+  return error ? (
+    <div className="">{error}</div>
+  ) : (
+    <div className="flex justify-center md: py-24">
+      <UserCard user={feed[0]} />
+    </div>
+  );
+
 }
 
 export default Feed;

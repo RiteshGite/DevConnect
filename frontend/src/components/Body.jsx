@@ -1,4 +1,4 @@
-import { Outlet, useNavigate } from "react-router-dom";
+import { Navigate, Outlet, useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
@@ -31,7 +31,7 @@ const Body = () => {
 
   useEffect(() => {
     fetchUser();
-  }, []);
+  }, [user]);
 
   return (
     <div className="min-h-screen flex flex-col">
