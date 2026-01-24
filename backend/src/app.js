@@ -5,7 +5,6 @@ const cookieParser = require("cookie-parser");
 const { connectDb } = require("./config/db");
 const errorHandler = require("./middlewares/errorHandler");
 
-
 const authRouter = require("./router/auth");
 const profileRouter = require("./router/profile");
 const requestRouter = require("./router/request");
@@ -15,7 +14,7 @@ const cors = require("cors");
 const app = express();
 
 app.use(cors({
-    origin: "http://localhost:5173/",
+    origin: "http://localhost:5173",
     credentials: true,
 }));
 app.use(express.json());
