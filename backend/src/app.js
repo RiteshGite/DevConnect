@@ -28,6 +28,6 @@ app.use(errorHandler);
 
 connectDb()
     .then(() => {
-        app.listen(process.env.PORT);
+        app.listen(process.env.PORT || "7777");
     })
     .catch((err) => { });
