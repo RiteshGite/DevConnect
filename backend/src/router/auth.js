@@ -63,7 +63,6 @@ authRouter.post("/login", async (req, res, next) => {
             throw new Error("Invalid Credentials");
         } else {
             const token = await user.getJwt();
-            const isProd = process.env.NODE_ENV === "production";
             res.cookie("token", token, {
                 expires: new Date(Date.now() + 8 * 3600000),
                 httpOnly: true,
@@ -83,7 +82,6 @@ authRouter.post("/login", async (req, res, next) => {
 })
 
 authRouter.post("/logout", (req, res) => {
-    const isProd = process.env.NODE_ENV === "production";
     res.cookie("token", null, { 
         expires: new Date(Date.now()),
         httpOnly: true,

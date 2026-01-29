@@ -3,16 +3,15 @@
     "private": true,
     "version": "0.0.0",
     "type": "module",
-    "scripts": 
-    {
+    "scripts": {
         "dev": "vite",
         "build": "vite build",
         "lint": "eslint .",
         "preview": "vite preview"
     },
-    "dependencies": 
-    {
+    "dependencies": {
         "@reduxjs/toolkit": "^2.11.2",
+        "@stripe/stripe-js": "^8.7.0",
         "@tailwindcss/vite": "^4.1.18",
         "axios": "^1.13.2",
         "lucide-react": "^0.562.0",
@@ -23,8 +22,7 @@
         "react-router-dom": "^7.12.0",
         "tailwindcss": "^4.1.18"
     },
-    "devDependencies": 
-    {
+    "devDependencies": {
         "@eslint/js": "^9.39.1",
         "@types/react": "^19.2.5",
         "@types/react-dom": "^19.2.3",

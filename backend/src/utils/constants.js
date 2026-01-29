@@ -4,7 +4,18 @@ const JWT_TOKEN_EXPIRESIN = "1d";
 
 const BCRYPT_SALT_ROUNDS = 10;
 
+const MEMBERSHIP_PLANS = {
+    SILVER: {
+        name: "Silver Membership",
+        price: 499, // ₹499
+    },
+    GOLD: {
+        name: "Gold Membership",
+        price: 999, // ₹999
+    },
+};
+
 module.exports = {
-    DEFAULT_PROFILE_PHOTO, JWT_TOKEN_EXPIRESIN, BCRYPT_SALT_ROUNDS
+    DEFAULT_PROFILE_PHOTO, JWT_TOKEN_EXPIRESIN, BCRYPT_SALT_ROUNDS, MEMBERSHIP_PLANS
 }
 

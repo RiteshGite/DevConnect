@@ -1,4 +1,21 @@
 import { CheckCircle, Crown } from "lucide-react";
+import axios from "axios";
+import { BASE_URL } from "../utils/constants.js";
+
+const handleChoosePlan = async (planType) => {
+  try {
+    const res = await axios.post(
+      `${BASE_URL}/payment/create-checkout-session`,
+      { planType },
+      { withCredentials: true },
+    );
+    console.log(res);
+    window.location.href = res.data.url;
+  } catch (error) {
+    console.error("Payment error:", error);
+    alert("Something went wrong. Please try again.");
+  }
+};
 
 const Membership = () => {
   return (
@@ -23,7 +40,10 @@ const Membership = () => {
             </li>
           </ul>
 
-          <button className="btn btn-outline btn-primary mt-4">
+          <button
+            className="btn btn-outline btn-primary mt-4"
+            onClick={() => handleChoosePlan("SILVER")}
+          >
             Choose Silver
           </button>
         </div>
@@ -54,12 +74,16 @@ const Membership = () => {
               Profile Priority
             </li>
             <li className="flex items-center gap-2">
-              <CheckCircle className="w-5 h-5" />
-              6 Months
+              <CheckCircle className="w-5 h-5" />6 Months
             </li>
           </ul>
 
-          <button className="btn btn-neutral mt-4">Choose Gold</button>
+          <button
+            className="btn btn-neutral mt-4"
+            onClick={() => handleChoosePlan("GOLD")}
+          >
+            Choose Gold
+          </button>
         </div>
       </div>
     </div>

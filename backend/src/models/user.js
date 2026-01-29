@@ -82,7 +82,7 @@ userSchema.methods.getJwt = async function () {
 }
 
 userSchema.methods.getHash = async function (userInputPassword) {
-    const passwordHash = await bcrypt.hash(userInputPassword, BECRYPT_SALT_ROUNDS);
+    const passwordHash = await bcrypt.hash(userInputPassword, BCRYPT_SALT_ROUNDS);
     return passwordHash;
 };
 
