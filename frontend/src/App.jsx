@@ -9,7 +9,6 @@ import Error from "./components/Error";
 import { Toaster } from "react-hot-toast";
 import Connections from "./components/Connections";
 import Requests from "./components/Requests";
-import Membership from "./components/Membership";
 
 const App = () => {
   return (
@@ -23,7 +22,6 @@ const App = () => {
             <Route path="profile" element={<Profile />} />
             <Route path="connections" element={<Connections />} />
             <Route path="requests" element={<Requests />} />
-            <Route path="membership" element={<Membership />} />
           </Route>
           <Route path="*" element={<Error />} />
         </Routes>
