@@ -1,14 +1,16 @@
 import { useSelector } from "react-redux";
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = () => {
   const user = useSelector((store) => store.user);
 
+  // If user already logged in → block login page
   if (user) {
-    return <Navigate to="/feed" />;
+    return <Navigate to="/feed" replace />;
   }
 
-  return children;
+  // Else allow access (render nested route)
+  return <Outlet />;
 };
 
 export default ProtectedRoute;
