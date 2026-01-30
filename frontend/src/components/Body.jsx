@@ -25,7 +25,7 @@ const Body = () => {
     } catch (err) {
       setLoading(false);
       if (err.status === 401) {
-        navigate("/login", { replace: true });
+        navigate("/", { replace: true });
       } else {
         navigate("/Error");
       }
