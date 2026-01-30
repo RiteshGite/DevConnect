@@ -9,18 +9,20 @@ const authRouter = require("./router/auth");
 const profileRouter = require("./router/profile");
 const requestRouter = require("./router/request");
 const userRouter = require("./router/user");
-const paymentRouter = require("./router/payment");
 
 const cors = require("cors");
 
 const app = express();
 
+const allowedOrigins = [
+    "http://localhost:5173",
+    "https://dev-tinder-neon-pi.vercel.app",
+    "http://35.171.47.132",
+    "http://developerstinder.duckdns.org"
+].filter(Boolean); 
+
 app.use(cors({
-    origin: [
-        "http://localhost:5173",
-        "https://dev-tinder-neon-pi.vercel.app",
-        "http://35.171.47.132",
-    ],
+    origin: allowedOrigins,
     credentials: true,
 }));
 
@@ -31,7 +33,6 @@ app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", requestRouter);
 app.use("/", userRouter);
-app.use("/", paymentRouter);
 
 app.use(errorHandler);
 

@@ -59,6 +59,7 @@ authRouter.post("/login", async (req, res, next) => {
             throw new Error("Invalid Credentials");
         }
         const isPasswordValid = await user.isPasswordValid(password);
+        const isProd = process.env.NODE_ENV === "production";
         if (!isPasswordValid) {
             throw new Error("Invalid Credentials");
         } else {
@@ -82,6 +83,7 @@ authRouter.post("/login", async (req, res, next) => {
 })
 
 authRouter.post("/logout", (req, res) => {
+    const isProd = process.env.NODE_ENV === "production";
     res.cookie("token", null, { 
         expires: new Date(Date.now()),
         httpOnly: true,
