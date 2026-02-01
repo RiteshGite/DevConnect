@@ -9,6 +9,7 @@ const authRouter = require("./router/auth");
 const profileRouter = require("./router/profile");
 const requestRouter = require("./router/request");
 const userRouter = require("./router/user");
+const paymentRouter = require("./router/payment");
 
 const cors = require("cors");
 
@@ -33,6 +34,7 @@ app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", requestRouter);
 app.use("/", userRouter);
+app.use("/", paymentRouter);
 
 app.use(errorHandler);
 

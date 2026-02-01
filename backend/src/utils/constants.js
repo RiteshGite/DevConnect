@@ -4,7 +4,23 @@ const JWT_TOKEN_EXPIRESIN = "1d";
 
 const BCRYPT_SALT_ROUNDS = 10;
 
+const MEMBERSHIP_PLANS = {
+    Silver: {
+        name: "Silver Membership",
+        price: 499,
+        period: "3 months",
+        description: "100 requests/day, Blue Tick"
+    },
+    Gold: {
+        name: "Gold Membership",
+        price: 999,
+        period: "6 months",
+        description: "Unlimited requests, DevTinder Badge, Profile Priority"
+    }
+}
+
 module.exports = {
-    DEFAULT_PROFILE_PHOTO, JWT_TOKEN_EXPIRESIN, BCRYPT_SALT_ROUNDS
+    DEFAULT_PROFILE_PHOTO, JWT_TOKEN_EXPIRESIN, BCRYPT_SALT_ROUNDS,
+    MEMBERSHIP_PLANS
 }
 
