@@ -27,7 +27,23 @@ const paymentSchema = new mongoose.Schema({
     },
     receipt: {
         type: String,
-        required: true
+    },
+    notes: {
+        firstName: {
+            type: String, 
+        },
+        lastName: {
+            type: String,
+        },
+        emailId: {
+            type: String,
+        },
+        membership_type: {
+            type: Object,
+        },
+        expiryDate: {
+            type: Date,
+        }
     }
 }, {
     timestamps: true

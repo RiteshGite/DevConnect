@@ -2,6 +2,7 @@ const express = require("express");
 const stripe = require("../config/stripe");
 const { MEMBERSHIP_PLANS } = require("../utils/constants");
 const { userAuth } = require("../middlewares/auth");
+const Payment = require("../models/payment");
 
 const paymentRouter = express.Router();
 
@@ -38,13 +39,33 @@ paymentRouter.post(
                 cancel_url: `${process.env.FRONTEND_URL}/payment-cancel`,
                 metadata: {
                     userId: req.user._id.toString(), 
-                    planType: planType,           
+                    membership_type: planType,           
                     durationInDays: plan.period.toString()
                 }
             });
+
+            const payment = new Payment({
+                userId: req.user._id,
+                orderId: session.id,
+                status: session.status,
+                amount: session.amount_total / 100,
+                currency: session.currency,
+                receipt: session.payment_intent,
+                notes: {
+                    firstName: req.user.firstName,
+                    lastName: req.user.lastName,
+                    emailId: req.user.emailId,
+                    membership_type: {
+                        ...plan
+                    }
+                }
+            })
+
+            const savePayment = await payment.save();
+
             return res.status(200).json({
-                session: session,
-                url: session.url
+                url: session.url,
+                savePayment: savePayment
             });
 
         } catch (error) {

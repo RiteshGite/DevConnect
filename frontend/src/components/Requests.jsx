@@ -71,7 +71,7 @@ const Requests = () => {
               <img
                 src={request.fromUserId.photoUrl}
                 alt="profile"
-                className="w-16 h-16 rounded-full"
+                className="w-16 h-16 rounded-full object-cover"
               />
             </figure>
 

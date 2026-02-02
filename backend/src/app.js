@@ -10,6 +10,7 @@ const profileRouter = require("./router/profile");
 const requestRouter = require("./router/request");
 const userRouter = require("./router/user");
 const paymentRouter = require("./router/payment");
+const paymentWebhookHandler = require("./router/paymentWebhookHandler");
 
 const cors = require("cors");
 
@@ -27,8 +28,14 @@ app.use(cors({
     credentials: true,
 }));
 
-app.use(express.json());
+app.post(
+    "/payment/webhook",
+    express.raw({ type: "application/json" }),
+    paymentWebhookHandler
+);
+
 app.use(cookieParser());
+app.use(express.json());
 
 app.use("/", authRouter);
 app.use("/", profileRouter);

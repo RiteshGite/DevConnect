@@ -64,7 +64,7 @@ const EditProfile = ({ user }) => {
       {/* Form */}
       <div className="w-full max-w-2xl">
         <form
-          className="card w-full bg-base-100/10 backdrop-blur-md shadow-xl space-y-5 p-6"
+          className="card w-full bg-base-200 backdrop-blur-md shadow-xl space-y-5 p-6"
           onSubmit={handleProfileSave}
         >
           <h2 className="text-2xl font-semibold text-primary text-center lg:text-left mb-6">

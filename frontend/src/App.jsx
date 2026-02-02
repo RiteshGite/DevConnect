@@ -12,6 +12,8 @@ import Requests from "./components/Requests";
 import Membership from "./components/Membership";
 import Landing from "./components/Landing";
 import ProtectedRoute from "./components/ProtectedRoute";
+import PaymentSuccess from "./components/PaymentSuccess";
+import PaymentFailed from "./components/PaymentFail";
 
 const App = () => {
   return (
@@ -29,6 +31,8 @@ const App = () => {
             <Route path="connections" element={<Connections />} />
             <Route path="requests" element={<Requests />} />
             <Route path="membership" element={<Membership />} />
+            <Route path="payment-success" element={<PaymentSuccess />} />
+            <Route path="payment-cancel" element={<PaymentFailed />} />
           </Route>
           <Route path="*" element={<Error />} />
         </Routes>
