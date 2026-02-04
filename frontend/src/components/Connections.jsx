@@ -3,7 +3,7 @@ import axios from "axios";
 import { BASE_URL } from "../utils/constants";
 import { useDispatch, useSelector } from "react-redux";
 import { addConnections } from "../utils/connections";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
 
 const Connections = () => {
@@ -45,9 +45,7 @@ const Connections = () => {
 
   return (
     <div className="max-w-3xl mx-auto p-4 min-h-screen mb-32">
-      <h2 className="text-2xl font-bold mb-6 text-center">
-        Connections
-      </h2>
+      <h2 className="text-2xl font-bold mb-6 text-center">Connections</h2>
 
       {loading && !connections && (
         <div className="flex justify-center mt-10">
@@ -91,6 +89,16 @@ const Connections = () => {
                   ))}
                 </div>
               </div>
+
+              <div className="card-actions p-4 justify-center sm:justify-end flex items-center">
+                <Link
+                  to={`/chat/${connection._id}`}
+                  className="btn btn-primary"
+                >
+                  Chat
+                </Link>
+              </div>
+              
             </div>
           ))}
         </div>

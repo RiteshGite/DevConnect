@@ -14,6 +14,7 @@ import Landing from "./components/Landing";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PaymentSuccess from "./components/PaymentSuccess";
 import PaymentFailed from "./components/PaymentFail";
+import Chat from "./components/Chat";
 
 const App = () => {
   return (
@@ -33,6 +34,7 @@ const App = () => {
             <Route path="membership" element={<Membership />} />
             <Route path="payment-success" element={<PaymentSuccess />} />
             <Route path="payment-cancel" element={<PaymentFailed />} />
+            <Route path="chat/:targetUserId" element={<Chat />} />
           </Route>
           <Route path="*" element={<Error />} />
         </Routes>

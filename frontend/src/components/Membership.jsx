@@ -2,21 +2,27 @@ import { CheckCircle, Crown, Sparkles } from "lucide-react";
 import { BASE_URL } from "../utils/constants";
 import axios from "axios";
 import toast from "react-hot-toast";
-
-const handleBuyClick = async (planType) => {
-  try {
-    const order = await axios.post(
-      `${BASE_URL}/payment/create-checkout-session`,
-      { planType },
-      { withCredentials: true },
-    );
-    window.location.href = order.data.url;
-  } catch (err) {
-    toast.error(err.message || "Something went wrong");
-  }
-};
+import { useState } from "react";
 
 const Membership = () => {
+
+  const [loadingPlan, setLoadingPlan] = useState(null);
+
+  const handleBuyClick = async (planType) => {
+    try {
+      setLoadingPlan(planType);
+      const order = await axios.post(
+        `${BASE_URL}/payment/create-checkout-session`,
+        { planType },
+        { withCredentials: true },
+      );
+      window.location.href = order.data.url;
+    } catch (err) {
+      setLoadingPlan(null);
+      toast.error(err.message || "Something went wrong");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-neutral-900 via-black to-neutral-900 flex items-center justify-center px-4">
       <div className="max-w-6xl w-full">
@@ -60,11 +66,20 @@ const Membership = () => {
               </li>
             </ul>
 
+            {/* Silver */}
             <button
               onClick={() => handleBuyClick("Silver")}
-              className="btn btn-outline btn-primary w-full mt-8"
+              disabled={loadingPlan === "Silver"}
+              className="btn btn-outline btn-primary w-full mt-8 disabled:opacity-60"
             >
-              Choose Silver
+              {loadingPlan === "Silver" ? (
+                <span className="flex items-center justify-center gap-2">
+                  <span className="loading loading-spinner loading-sm"></span>
+                  Processing...
+                </span>
+              ) : (
+                "Choose Silver"
+              )}
             </button>
           </div>
 
@@ -106,11 +121,20 @@ const Membership = () => {
               </li>
             </ul>
 
+            {/* Gold */}
             <button
               onClick={() => handleBuyClick("Gold")}
-              className="btn bg-black text-yellow-400 hover:bg-neutral-900 w-full mt-8"
+              disabled={loadingPlan === "Gold"}
+              className="btn bg-black text-yellow-400 w-full mt-8 disabled:opacity-70"
             >
-              Go Gold 🚀
+              {loadingPlan === "Gold" ? (
+                <span className="flex items-center justify-center gap-2">
+                  <span className="loading loading-spinner loading-sm"></span>
+                  Redirecting...
+                </span>
+              ) : (
+                "Go Gold 🚀"
+              )}
             </button>
           </div>
         </div>
