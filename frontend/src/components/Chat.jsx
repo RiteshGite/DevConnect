@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { Navigate, useParams } from "react-router-dom";
+import { useParams, Navigate } from "react-router-dom";
 import { createSocketConnection } from "../utils/socket";
 import { useSelector } from "react-redux";
 import axios from "axios";
@@ -13,29 +13,55 @@ const Chat = () => {
   const [messages, setMessages] = useState([]);
   const [newMsg, setNewMsg] = useState("");
   const [redirect, setRedirect] = useState(false);
+  const [isOnline, setIsOnline] = useState(false);
+  const [targetUser, setTargetUser] = useState(null);
 
   const socketRef = useRef(null);
+  const bottomRef = useRef(null);
 
-  /* ===============================
-     1️⃣ Fetch old messages
-     =============================== */
+  // =========================
+  // 🔹 Fetch Target User Info
+  // =========================
+  useEffect(() => {
+    if (!targetUserId) return;
+
+    const fetchTargetUser = async () => {
+      try {
+        const res = await axios.get(
+          `${BASE_URL}/profile/targetUser/${targetUserId}`,
+          { withCredentials: true }
+        );
+        setTargetUser(res.data);
+      } catch (err) {
+        console.error("Error fetching target user:", err);
+      }
+    };
+
+    fetchTargetUser();
+  }, [targetUserId]);
+
+  // =========================
+  // 🔹 Load Old Messages
+  // =========================
   useEffect(() => {
     if (!userId || !targetUserId) return;
 
     const fetchMessages = async () => {
       try {
-        const res = await axios.get(`${BASE_URL}/chat/${targetUserId}`, {
-          withCredentials: true,
-        });
+        const res = await axios.get(
+          `${BASE_URL}/chat/${targetUserId}`,
+          { withCredentials: true }
+        );
 
         const formattedMessages = res.data.map((msg) => ({
           senderId: msg.senderId,
           message: msg.text,
+          time: new Date(msg.createdAt),
         }));
 
         setMessages(formattedMessages);
       } catch (err) {
-        // 🔥 redirect on 403 / error
+        console.error("Fetch chat error:", err.message);
         setRedirect(true);
       }
     };
@@ -43,42 +69,71 @@ const Chat = () => {
     fetchMessages();
   }, [userId, targetUserId]);
 
-  /* ===============================
-     2️⃣ Setup socket
-     =============================== */
+  // =========================
+  // 🔌 Socket Setup
+  // =========================
   useEffect(() => {
     if (!userId || !targetUserId) return;
 
-    socketRef.current = createSocketConnection();
+    const socket = createSocketConnection();
+    socketRef.current = socket;
 
-    socketRef.current.emit("joinChat", { targetUserId });
+    socket.emit("joinChat", { targetUserId });
+    socket.emit("checkOnlineStatus", { targetUserId });
 
-    socketRef.current.off("receiveMessage");
+    socket.on("onlineStatus", (data) => {
+      setIsOnline(data.online);
+    });
 
-    socketRef.current.on("receiveMessage", (data) => {
-      if (data.senderId === userId) return;
-      setMessages((prev) => [...prev, data]);
+    socket.on("userStatusChanged", (data) => {
+      if (data.userId === targetUserId) {
+        setIsOnline(data.online);
+      }
+    });
+
+    socket.on("receiveMessage", (data) => {
+      setMessages((prev) => {
+        // prevent duplicate own message
+        if (data.senderId?.toString() === userId?.toString()) {
+          return prev;
+        }
+
+        return [
+          ...prev,
+          {
+            ...data,
+            time: new Date(),
+          },
+        ];
+      });
     });
 
     return () => {
-      socketRef.current.disconnect();
-      socketRef.current = null;
+      socket.disconnect();
     };
   }, [userId, targetUserId]);
 
-  /* ===============================
-     3️⃣ Send message
-     =============================== */
+  // =========================
+  // 🔄 Auto Scroll
+  // =========================
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  // =========================
+  // 📤 Send Message
+  // =========================
   const sendMessage = () => {
     if (!newMsg.trim()) return;
 
-    setMessages((prev) => [
-      ...prev,
-      {
-        senderId: userId,
-        message: newMsg,
-      },
-    ]);
+    const messageObj = {
+      senderId: userId,
+      message: newMsg,
+      time: new Date(),
+    };
+
+    // optimistic UI update
+    setMessages((prev) => [...prev, messageObj]);
 
     socketRef.current.emit("sendMessage", {
       targetUserId,
@@ -88,39 +143,104 @@ const Chat = () => {
     setNewMsg("");
   };
 
-  // 🔥 redirect handled here
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      sendMessage();
+    }
+  };
+
   if (redirect) {
     return <Navigate to="/error" replace />;
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black text-white">
-      <div className="w-full max-w-xl bg-neutral-800 rounded-xl p-4 flex flex-col h-[80vh]">
-        {/* Messages */}
-        <div className="flex-1 overflow-y-auto space-y-3">
-          {messages.map((msg, index) => (
-            <div
-              key={index}
-              className={`p-2 rounded-lg max-w-xs ${
-                msg.senderId?.toString() === userId?.toString()
-                  ? "bg-blue-600 ml-auto"
-                  : "bg-neutral-600"
-              }`}
-            >
-              {msg.message}
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-neutral-900 to-black text-white">
+      <div className="w-full max-w-2xl bg-neutral-900 rounded-2xl shadow-2xl flex flex-col h-[85vh]">
+
+        {/* 🔥 Chat Header */}
+        <div className="p-4 border-b border-neutral-700 flex items-center justify-between">
+          
+          <div className="flex items-center gap-3">
+            {targetUser && (
+              <img
+                src={targetUser.photoUrl}
+                alt="profile"
+                className="w-10 h-10 rounded-full object-cover"
+              />
+            )}
+
+            <div>
+              <h2 className="text-lg font-semibold">
+                {targetUser
+                  ? `${targetUser.firstName} ${targetUser.lastName}`
+                  : "Chat"}
+              </h2>
+
+              <span
+                className={`text-xs ${
+                  isOnline ? "text-green-400" : "text-red-400"
+                }`}
+              >
+                {isOnline ? "Online" : "Offline"}
+              </span>
             </div>
-          ))}
+          </div>
         </div>
 
-        {/* Input */}
-        <div className="flex gap-2 mt-4">
+        {/* 🔥 Messages */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          {messages.map((msg, index) => {
+            const isOwn =
+              msg.senderId?.toString() === userId?.toString();
+
+            return (
+              <div
+                key={index}
+                className={`flex ${
+                  isOwn ? "justify-end" : "justify-start"
+                }`}
+              >
+                <div
+                  className={`px-4 py-2 rounded-2xl max-w-xs break-words ${
+                    isOwn
+                      ? "bg-blue-600 rounded-br-none"
+                      : "bg-neutral-700 rounded-bl-none"
+                  }`}
+                >
+                  <p>{msg.message}</p>
+
+                  <div className="text-xs text-neutral-300 mt-1 text-right">
+                    {msg.time?.toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+
+          <div ref={bottomRef}></div>
+        </div>
+
+        {/* 🔥 Input Section */}
+        <div className="p-4 border-t border-neutral-700 flex gap-3">
           <input
             value={newMsg}
             onChange={(e) => setNewMsg(e.target.value)}
-            className="flex-1 p-2 rounded bg-neutral-700"
-            placeholder="Type message..."
+            onKeyDown={handleKeyPress}
+            className="flex-1 p-3 rounded-full bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Type your message..."
           />
-          <button onClick={sendMessage} className="bg-blue-600 px-4 rounded">
+          <button
+            onClick={sendMessage}
+            disabled={!newMsg.trim()}
+            className={`px-6 rounded-full transition ${
+              newMsg.trim()
+                ? "bg-blue-600 hover:bg-blue-700"
+                : "bg-gray-600 cursor-not-allowed"
+            }`}
+          >
             Send
           </button>
         </div>

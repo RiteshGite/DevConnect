@@ -64,4 +64,25 @@ profileRouter.patch("/profile/password", userAuth, async (req, res, next) => {
     }
 })
 
+profileRouter.get("/profile/targetUser/:id", userAuth, async (req, res) => {
+    try {
+
+        console.log("You are in the /user/:id api");
+
+        const userId = req.params.id;
+
+        const user = await User.findById(userId)
+            .select("firstName lastName photoUrl");
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        res.json(user);
+
+    } catch (err) {
+        res.status(400).json({ error: "Something went wrong" });
+    }
+});
+
 module.exports = profileRouter;
