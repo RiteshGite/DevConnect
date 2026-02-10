@@ -1,4 +1,4 @@
-import { User, Users, Inbox, LogOut, Home, ChessQueen, Brain} from "lucide-react";
+import { User, Users, Inbox, LogOut, Home, ChessQueen, Brain, Search} from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { removeUser } from "../utils/userSlice";
@@ -9,8 +9,10 @@ import { removeFeed } from "../utils/feedSlice";
 import { removeConnections } from "../utils/connections";
 import { removeRequests } from "../utils/requests";
 import { Crown } from "lucide-react";
+import { useState } from "react";
 
 const Navbar = () => {
+  const [searchText, setSearchText] = useState("");
   const user = useSelector((store) => store.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -36,6 +38,13 @@ const Navbar = () => {
       toast.error("Something went wrong!");
     }
   };
+
+    const handleSearch = (e) => {
+      e.preventDefault();
+      if (!searchText.trim()) return;
+      navigate(`/search?query=${searchText}`);
+      setSearchText("");
+    };
 
   return (
     <div className="navbar bg-base-200 border-b border-base-300 px-3 sm:px-6 fixed z-50">
@@ -63,6 +72,19 @@ const Navbar = () => {
       {/* ================= RIGHT ================= */}
       {user && (
         <>
+          <form
+            onSubmit={handleSearch}
+            className="hidden md:flex items-center bg-slate-900 border border-slate-700 rounded-lg px-3 py-1"
+          >
+            <Search size={16} className="text-gray-400 mr-2" />
+            <input
+              type="text"
+              placeholder="Search users..."
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              className="bg-transparent outline-none text-sm text-white placeholder-gray-500 w-40"
+            />
+          </form>
           <div className="mx-7">
             {membershipBadge === "Gold" && (
               <Crown className="w-6 h-6 text-yellow-400 drop-shadow-[0_0_6px_rgba(250,204,21,0.9)]" />

@@ -16,6 +16,7 @@ import PaymentSuccess from "./components/PaymentSuccess";
 import PaymentFailed from "./components/PaymentFail";
 import Chat from "./components/Chat";
 import SmartMatches from "./components/SmartMatches";
+import Search from "./components/Search";
 
 const App = () => {
   return (
@@ -36,7 +37,8 @@ const App = () => {
             <Route path="payment-success" element={<PaymentSuccess />} />
             <Route path="payment-cancel" element={<PaymentFailed />} />
             <Route path="chat/:targetUserId" element={<Chat />} />
-            <Route path="/smart-matches" element={<SmartMatches/>}/>
+            <Route path="/smart-matches" element={<SmartMatches />} />
+            <Route path="search" element={<Search />} />
           </Route>
           <Route path="*" element={<Error />} />
         </Routes>

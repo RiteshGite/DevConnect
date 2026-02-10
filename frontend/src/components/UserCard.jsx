@@ -3,8 +3,9 @@ import { BASE_URL } from "../utils/constants";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { removeFromFeed } from "../utils/feedSlice";
+import { Crown } from "lucide-react";
 
-const UserCard = ({ user }) => {
+const UserCard = ({ user, onRemove, onAction }) => {
   const dispatch = useDispatch();
 
   if (!user) return null;
@@ -33,6 +34,14 @@ const UserCard = ({ user }) => {
         {},
         { withCredentials: true },
       );
+      // ✅ Remove from search page
+      if (onAction) {
+        onAction();
+      }
+      // ✅ Remove from local state (for SmartMatches page)
+      if (onRemove) {
+        onRemove(_id);
+      }
       dispatch(removeFromFeed(_id));
     } catch (err) {
       toast.error("Something went wrong");
@@ -51,12 +60,31 @@ const UserCard = ({ user }) => {
         }
       `}
     >
-      <figure className="h-48 sm:h-56">
+      <figure className="h-48 sm:h-56 relative">
         <img
           src={photoUrl}
           alt={`${firstName} ${lastName}`}
           className="w-full h-full object-cover"
         />
+
+        {/* 🔥 Membership Badge */}
+        {(isGold || isSilver) && (
+          <div
+            className={`absolute top-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-full font-semibold text-xs sm:text-sm shadow-lg
+            ${
+              isGold
+                ? "bg-gradient-to-r from-yellow-400 to-yellow-600 text-black"
+                : "bg-gradient-to-r from-gray-300 to-gray-400 text-black"
+            }`}
+          >
+            <Crown
+              size={16}
+              fill={isGold ? "#fbbf24" : "#d1d5db"}
+              strokeWidth={0}
+            />
+            <span>{isGold ? "Gold Member" : "Silver Member"}</span>
+          </div>
+        )}
       </figure>
 
       <div className="card-body p-4 sm:p-6">

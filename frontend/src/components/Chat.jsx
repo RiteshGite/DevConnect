@@ -17,7 +17,7 @@ const Chat = () => {
   const [targetUser, setTargetUser] = useState(null);
 
   const socketRef = useRef(null);
-  const bottomRef = useRef(null);
+  const messagesContainerRef = useRef(null);
 
   // =========================
   // 🔹 Fetch Target User Info
@@ -29,7 +29,7 @@ const Chat = () => {
       try {
         const res = await axios.get(
           `${BASE_URL}/profile/targetUser/${targetUserId}`,
-          { withCredentials: true }
+          { withCredentials: true },
         );
         setTargetUser(res.data);
       } catch (err) {
@@ -48,10 +48,9 @@ const Chat = () => {
 
     const fetchMessages = async () => {
       try {
-        const res = await axios.get(
-          `${BASE_URL}/chat/${targetUserId}`,
-          { withCredentials: true }
-        );
+        const res = await axios.get(`${BASE_URL}/chat/${targetUserId}`, {
+          withCredentials: true,
+        });
 
         const formattedMessages = res.data.map((msg) => ({
           senderId: msg.senderId,
@@ -117,7 +116,10 @@ const Chat = () => {
   // 🔄 Auto Scroll
   // =========================
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop =
+        messagesContainerRef.current.scrollHeight;
+    }
   }, [messages]);
 
   // =========================
@@ -156,10 +158,8 @@ const Chat = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-neutral-900 to-black text-white">
       <div className="w-full max-w-2xl bg-neutral-900 rounded-2xl shadow-2xl flex flex-col h-[85vh]">
-
         {/* 🔥 Chat Header */}
         <div className="p-4 border-b border-neutral-700 flex items-center justify-between">
-          
           <div className="flex items-center gap-3">
             {targetUser && (
               <img
@@ -188,17 +188,17 @@ const Chat = () => {
         </div>
 
         {/* 🔥 Messages */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <div
+          ref={messagesContainerRef}
+          className="flex-1 overflow-y-auto p-4 space-y-4"
+        >
           {messages.map((msg, index) => {
-            const isOwn =
-              msg.senderId?.toString() === userId?.toString();
+            const isOwn = msg.senderId?.toString() === userId?.toString();
 
             return (
               <div
                 key={index}
-                className={`flex ${
-                  isOwn ? "justify-end" : "justify-start"
-                }`}
+                className={`flex ${isOwn ? "justify-end" : "justify-start"}`}
               >
                 <div
                   className={`px-4 py-2 rounded-2xl max-w-xs break-words ${
@@ -219,8 +219,6 @@ const Chat = () => {
               </div>
             );
           })}
-
-          <div ref={bottomRef}></div>
         </div>
 
         {/* 🔥 Input Section */}

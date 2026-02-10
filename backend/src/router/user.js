@@ -164,14 +164,11 @@ userRouter.get("/feed", userAuth, async (req, res, next) => {
 
 userRouter.get("/user/smart-matches", userAuth, async (req, res, next) => {
     try {
-        console.log("hello");
         const loggedInUserId = req.user._id;
 
         // 1️⃣ Get logged-in user skills
         const me = await User.findById(loggedInUserId).select("skills");
         const mySkills = (me.skills || []).map(s => s.toLowerCase());
-
-        console.log("myskills = ", mySkills);
 
         // 2️⃣ Find users already interacted with (hide them)
         const requests = await ConnectionRequest.find({
@@ -233,6 +230,90 @@ userRouter.get("/user/smart-matches", userAuth, async (req, res, next) => {
 
     } catch (err) {
         next(err);
+    }
+});
+
+userRouter.get("/user/search", userAuth, async (req, res) => {
+    try {
+        const loggedInUserId = req.user._id;
+        const { query } = req.query;
+
+        // 🔐 Validation
+        if (!query) {
+            return res.status(400).json({ message: "Search query required" });
+        }
+
+        const safeQuery = query.trim();
+
+        if (safeQuery === "") {
+            return res.status(400).json({ message: "Search query required" });
+        }
+
+        // 📄 Pagination
+        const page = parseInt(req.query.page) || 1;
+        const limit = 9;
+        const skip = (page - 1) * limit;
+
+        // 🔍 Split query words
+        const words = safeQuery.split(" ").filter(Boolean);
+
+        let nameCondition;
+
+        // 🟢 Single word search
+        if (words.length === 1) {
+            nameCondition = {
+                $or: [
+                    { firstName: { $regex: "^" + words[0], $options: "i" } },
+                    { lastName: { $regex: "^" + words[0], $options: "i" } }
+                ]
+            };
+        }
+
+        // 🟢 Two words search (rahul sharma)
+        else {
+            nameCondition = {
+                $and: [
+                    { firstName: { $regex: "^" + words[0], $options: "i" } },
+                    { lastName: { $regex: "^" + words[1], $options: "i" } }
+                ]
+            };
+        }
+
+        // 1️⃣ Get all connection records of logged-in user
+        const connectionRequests = await ConnectionRequest.find({
+            $or: [
+                { fromUserId: loggedInUserId },
+                { toUserId: loggedInUserId }
+            ]
+        }).select("fromUserId toUserId");
+
+        // 2️⃣ Build exclude list
+        const excludeUsers = connectionRequests.map((conn) =>
+            conn.fromUserId.toString() === loggedInUserId.toString()
+                ? conn.toUserId
+                : conn.fromUserId
+        );
+
+        // 3️⃣ Final Query
+        const users = await User.find({
+            $and: [
+                nameCondition,
+                {
+                    _id: { $nin: [...excludeUsers, loggedInUserId] }
+                }
+            ]
+        })
+            .select(
+                "firstName lastName photoUrl age gender about skills membershipType"
+            )
+            .skip(skip)
+            .limit(limit);
+
+        res.status(200).json(users);
+
+    } catch (err) {
+        console.error("SEARCH ERROR:", err);
+        res.status(500).json({ error: "Something went wrong" });
     }
 });
 
