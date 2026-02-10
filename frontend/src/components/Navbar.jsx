@@ -8,6 +8,7 @@ import axios from "axios";
 import { removeFeed } from "../utils/feedSlice";
 import { removeConnections } from "../utils/connections";
 import { removeRequests } from "../utils/requests";
+import { Crown } from "lucide-react";
 
 const Navbar = () => {
   const user = useSelector((store) => store.user);
@@ -55,24 +56,6 @@ const Navbar = () => {
             <h2 className="text-lg sm:text-2xl font-bold tracking-tight">
               Dev<span className="text-primary">Connect</span>
             </h2>
-
-            {membershipBadge === "Gold" && (
-              <img
-                src="/gold.png"
-                alt="Gold Member"
-                title="Gold Member"
-                className="w-7 h-7 sm:w-8 sm:h-8 drop-shadow-[0_0_12px_rgba(234,179,8,0.9)] hover:drop-shadow-[0_0_20px_rgba(234,179,8,1)] hover:scale-110 transition-all duration-300 cursor-pointer animate-pulse"
-              />
-            )}
-
-            {membershipBadge === "Silver" && (
-              <img
-                src="/silver.png"
-                alt="Silver Member"
-                title="Silver Member"
-                className="w-6 h-6 sm:w-7 sm:h-7 drop-shadow-[0_0_10px_rgba(192,192,192,0.8)] hover:drop-shadow-[0_0_18px_rgba(192,192,192,1)] hover:scale-110 transition-all duration-300 cursor-pointer"
-              />
-            )}
           </div>
         </Link>
       </div>
@@ -80,6 +63,15 @@ const Navbar = () => {
       {/* ================= RIGHT ================= */}
       {user && (
         <>
+          <div className="mx-7">
+            {membershipBadge === "Gold" && (
+              <Crown className="w-6 h-6 text-yellow-400 drop-shadow-[0_0_6px_rgba(250,204,21,0.9)]" />
+            )}
+
+            {membershipBadge === "Silver" && (
+              <Crown className="w-6 h-6 text-gray-300 drop-shadow-[0_0_6px_rgba(209,213,219,0.9)]" />
+            )}
+          </div>
           <div className="text-gray-200 text-sm sm:text-lg mr-3 sm:mr-10 hidden md:block">
             Welcome,{" "}
             <span className="text-gray-50 font-semibold">{user.firstName}</span>
@@ -104,15 +96,17 @@ const Navbar = () => {
             >
               {/* Membership label */}
               {membershipBadge === "Gold" && (
-                <li className="px-3 py-2 text-center text-yellow-500 font-bold drop-shadow-[0_0_8px_rgba(234,179,8,0.6)]">
-                  👑 Gold Member
-                </li>
+                <div className="flex justify-start mb-2">
+                  <Crown className="w-6 h-6 text-yellow-400 drop-shadow-[0_0_6px_rgba(250,204,21,0.9)]" />
+                  <span className="ml-2 font-bold">Gold Member</span>
+                </div>
               )}
 
               {membershipBadge === "Silver" && (
-                <li className="px-3 py-2 text-center text-gray-300 font-semibold drop-shadow-[0_0_6px_rgba(192,192,192,0.5)]">
-                  🥈 Silver Member
-                </li>
+                <div className="flex justify-start mb-2">
+                  <Crown className="w-6 h-6 text-gray-300 drop-shadow-[0_0_6px_rgba(209,213,219,0.9)]" />
+                  <span className="ml-2 font-bold">Silver Member</span>
+                </div>
               )}
 
               <li>

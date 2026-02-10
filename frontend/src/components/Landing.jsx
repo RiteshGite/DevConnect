@@ -1,6 +1,7 @@
 import { Users, MessageCircle, Zap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import AIChatbot from "./AIChatBot";
 
 const Landing = () => {
   const navigate = useNavigate();
@@ -8,6 +9,7 @@ const Landing = () => {
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       {/* Hero Section */}
+      <AIChatbot/>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-20 text-center">
         <h1 className="text-3xl sm:text-5xl md:text-7xl font-bold mb-4 sm:mb-6 leading-tight">
           Connect. Collaborate. Code. 💻

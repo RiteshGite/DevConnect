@@ -56,10 +56,9 @@ const Membership = () => {
   ];
 
   const goldFeatures = [
-    "Profile priority boost",
+    "Highest Profile priority",
     "Gold Highlight",
     "DevConnect Gold badge",
-    "Maximum visibility",
   ];
 
   useEffect(() => {
@@ -105,8 +104,8 @@ const Membership = () => {
             )}
 
             <h2 className="text-2xl font-semibold text-white mb-2 flex items-center gap-2">
+              <Crown className="w-6 h-6 text-gray-300 drop-shadow-[0_0_6px_rgba(209,213,219,0.9)]" />
               Silver Membership
-              <img src="/silver.png" alt="Silver Badge" className="w-7 h-7" />
             </h2>
 
             <p className="text-neutral-400 mb-4">Perfect to get noticed</p>
@@ -164,13 +163,8 @@ const Membership = () => {
             )}
 
             <h2 className="text-2xl font-bold flex items-center gap-2 mb-2">
-              <Crown className="w-6 h-6" />
+              <Crown className="w-6 h-6 text-red-600 transition hover:drop-shadow-[0_0_10px_rgba(220,38,38,1)]" />
               Gold Membership
-              <img
-                src="/gold.png"
-                alt="Gold Badge"
-                className="w-8 h-8 drop-shadow-[0_0_10px_rgba(234,179,8,0.8)]"
-              />
             </h2>
 
             <p className="opacity-80 mb-4">Maximum reach & priority</p>
