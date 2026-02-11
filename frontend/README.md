@@ -23,7 +23,7 @@ A modern, responsive React-based frontend for the DevConnect developer networkin
 
 ## 🎯 Overview
 
-**DevConnect Frontend** is a feature-rich, responsive web application that enables developers to connect, collaborate, and grow together. The frontend provides an intuitive interface for browsing developer profiles, real-time chatting, smart matching, and membership management.
+**DevConnect Frontend** is a feature-rich, responsive web application that enables developers to connect, collaborate, and grow together. The frontend provides an intuitive interface for browsing developer profiles, real-time chatting, smart matching, and membership management
 
 ---
 
