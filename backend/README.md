@@ -371,8 +371,8 @@ Uses **Jaccard Similarity Algorithm** to calculate skill match percentage.
 
 | Plan | Price | Duration | Features |
 |------|-------|----------|----------|
-| **Silver** | ₹499 | 3 months | 100 requests/day, Blue verification tick |
-| **Gold** | ₹999 | 6 months | Unlimited requests, Gold badge, Feed priority |
+| **Silver** | ₹499 | 3 months |  Profile priority boost, Silver Highlight, DevConnect Silver badge |
+| **Gold** | ₹999 | 6 months | Highest Profile priority, Gold Highlight, DevConnect Gold badge |
 
 #### **POST /payment/create-checkout-session**
 **Request Body:**
