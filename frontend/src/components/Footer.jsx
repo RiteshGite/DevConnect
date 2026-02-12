@@ -50,31 +50,17 @@ const Footer = () => {
               <Link
                 to="https://github.com/RiteshGite"
                 target="_blank"
-                className="group relative p-2 rounded-full transition hover:bg-purple-500/20 hover:scale-110"
+                className="group relative p-2 rounded-full transition hover:bg-primary hover:scale-110"
               >
-                <Github className="w-5 h-5 group-hover:text-purple-400" />
-                <span
-                  className="absolute -top-7 left-1/2 -translate-x-1/2
-                                 text-xs px-2 py-0.5 rounded bg-purple-600 text-white
-                                 opacity-0 group-hover:opacity-100 transition"
-                >
-                  GitHub
-                </span>
+                <Github className="w-5 h-5" />
               </Link>
 
               <Link
                 to="https://www.linkedin.com/in/ritesh-gite/"
                 target="_blank"
-                className="group relative p-2 rounded-full transition hover:bg-purple-500/20 hover:scale-110"
+                className="group relative p-2 rounded-full transition hover:bg-primary hover:scale-110"
               >
-                <Linkedin className="w-5 h-5 group-hover:text-purple-400" />
-                <span
-                  className="absolute -top-7 left-1/2 -translate-x-1/2
-                                 text-xs px-2 py-0.5 rounded bg-purple-600 text-white
-                                 opacity-0 group-hover:opacity-100 transition"
-                >
-                  LinkedIn
-                </span>
+                <Linkedin className="w-5 h-5" />
               </Link>
             </div>
           </div>

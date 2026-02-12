@@ -11,7 +11,6 @@ import Connections from "./components/Connections";
 import Requests from "./components/Requests";
 import Membership from "./components/Membership";
 import Landing from "./components/Landing";
-import ProtectedRoute from "./components/ProtectedRoute";
 import PaymentSuccess from "./components/PaymentSuccess";
 import PaymentFailed from "./components/PaymentFail";
 import Chat from "./components/Chat";
@@ -26,9 +25,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Body />}>
             <Route index element={<Landing />} />
-            <Route element={<ProtectedRoute />}>
-              <Route path="login" element={<Login />} />
-            </Route>
+            <Route path="login" element={<Login />} />
             <Route path="feed" element={<Feed />} />
             <Route path="profile" element={<Profile />} />
             <Route path="connections" element={<Connections />} />

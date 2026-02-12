@@ -120,7 +120,6 @@ frontend/
 │   │   ├── PaymentFail.jsx       # Payment failure page
 │   │   ├── PaymentSuccess.jsx    # Payment success page
 │   │   ├── Profile.jsx           # User profile view
-│   │   ├── ProtectedRoute.jsx    # Auth route guard
 │   │   ├── Requests.jsx          # Connection requests page
 │   │   ├── Search.jsx            # User search results
 │   │   ├── Shimmer.jsx           # Loading skeleton
@@ -227,19 +226,6 @@ const [emailId, setEmail] = useState("");
 const [password, setPassword] = useState("");
 const [showPassword, setShowPassword] = useState(false);
 const [isSignUpForm, setSignUpForm] = useState(false);
-```
-
----
-
-#### **ProtectedRoute.jsx**
-**Purpose:** Prevent authenticated users from accessing login page
-
-**Logic:**
-```javascript
-if (user) {
-  return <Navigate to="/feed" replace />;
-}
-return <Outlet />;
 ```
 
 ---
@@ -632,10 +618,6 @@ const handleSearch = (e) => {
 ### **Route Protection**
 
 ```javascript
-// ProtectedRoute prevents logged-in users from accessing login
-<Route element={<ProtectedRoute />}>
-  <Route path="login" element={<Login />} />
-</Route>
 
 // Body component handles authentication check for all other routes
 <Route path="/" element={<Body />}>

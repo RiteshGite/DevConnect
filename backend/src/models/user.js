@@ -53,6 +53,9 @@ const userSchema = mongoose.Schema({
             message: "Invalid Photo URL"
         }
     },
+    profilePic: {
+        type: String
+    },
     about: {
         type: String,
         default: "This is default about of the user!",

@@ -60,13 +60,15 @@ const Search = () => {
 
       <div className="flex flex-wrap gap-10 justify-center">
         {results.map((user) => (
-          <UserCard
-            key={user._id}
-            user={user}
-            onAction={() =>
-              setResults((prev) => prev.filter((u) => u._id !== user._id))
-            }
-          />
+          <div>
+            <UserCard
+              key={user._id}
+              user={user}
+              onAction={() =>
+                setResults((prev) => prev.filter((u) => u._id !== user._id))
+              }
+            />
+          </div>
         ))}
       </div>
 

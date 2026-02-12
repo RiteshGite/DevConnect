@@ -15,7 +15,7 @@ const EditProfile = ({ user }) => {
     photoUrl: userPhoto,
     skills: userSkills,
     gender: userGender,
-    memberships
+    memberships,
   } = user;
 
   const [firstName, setFirstName] = useState(fName || "");
@@ -27,184 +27,221 @@ const EditProfile = ({ user }) => {
   const [skills, setSkills] = useState(userSkills || []);
   const [skillInput, setSkillInput] = useState("");
 
+  const [imageFile, setImageFile] = useState(null);
+  const [preview, setPreview] = useState(userPhoto || "");
+  const [loading, setLoading] = useState(false); // ✅ Added
+
   const dispatch = useDispatch();
 
+  // Add Skill
   const addSkill = () => {
     const value = skillInput.trim();
-    if (!value) return;
-    if (skills.includes(value)) return;
+    if (!value || skills.includes(value)) return;
     setSkills((prev) => [...prev, value]);
     setSkillInput("");
   };
 
+  // Remove Skill
   const removeSkill = (indexToRemove) => {
     setSkills((prev) => prev.filter((_, index) => index !== indexToRemove));
   };
 
+  // Handle Image Change
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setImageFile(file);
+    setPreview(URL.createObjectURL(file));
+  };
+
+  // Handle Save
   const handleProfileSave = async (e) => {
     e.preventDefault();
+    setLoading(true); // ✅ Start loader
+
     try {
-      const res = await axios.patch(
-        `${BASE_URL}/profile/edit`,
-        { firstName, lastName, age, photoUrl, about, gender, skills },
-        { withCredentials: true },
-      );
-      dispatch(addUser(res?.data?.after));
+      const formData = new FormData();
+
+      formData.append("firstName", firstName);
+      formData.append("lastName", lastName);
+      formData.append("age", age);
+      formData.append("about", about);
+      formData.append("gender", gender);
+
+      skills.forEach((skill) => {
+        formData.append("skills", skill);
+      });
+
+      if (imageFile) {
+        formData.append("profilePic", imageFile);
+      }
+
+      const res = await axios.put(`${BASE_URL}/profile/edit`, formData, {
+        withCredentials: true,
+      });
+
+      dispatch(addUser(res?.data?.user));
       toast.success(res?.data?.message);
     } catch (err) {
-      toast.error(
-        err?.response?.data?.errors ||
-          err?.data?.message ||
-          "Something went wrong",
-      );
+      toast.error(err?.response?.data?.message || "Profile update failed");
+    } finally {
+      setLoading(false); // ✅ Stop loader
     }
   };
 
   return (
-    <div className="flex flex-col lg:flex-row gap-10 justify-center items-start px-4 py-10 min-h-screen">
-      {/* Form */}
-      <div className="w-full max-w-2xl">
-        <form
-          className="card w-full bg-base-200 backdrop-blur-md shadow-xl space-y-5 p-6"
-          onSubmit={handleProfileSave}
-        >
-          <h2 className="text-2xl font-semibold text-primary text-center lg:text-left mb-6">
-            Edit Profile
-          </h2>
+    <div className="min-h-screen px-4 py-10">
+      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-14 items-start justify-center">
+        {/* ================= FORM ================= */}
+        <div className="w-full lg:w-[550px]">
+          <form
+            onSubmit={handleProfileSave}
+            className="bg-base-200 shadow-xl rounded-2xl p-8 space-y-6"
+          >
+            <h2 className="text-2xl font-semibold text-primary">
+              Edit Profile
+            </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="label text-base-content/80">First Name</label>
+            {/* Name */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <input
                 type="text"
+                placeholder="First Name"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
-                className="input input-bordered w-full bg-base-100/10"
+                className="input input-bordered w-full"
               />
-            </div>
-
-            <div>
-              <label className="label text-base-content/80">Last Name</label>
               <input
                 type="text"
+                placeholder="Last Name"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
-                className="input input-bordered w-full bg-base-100/10"
+                className="input input-bordered w-full"
               />
             </div>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="label text-base-content/80">Age</label>
+            {/* Age + Gender */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <input
                 type="number"
-                min={12}
+                min={18}
+                placeholder="Age"
                 value={age}
                 onChange={(e) => setAge(e.target.value)}
-                className="input input-bordered w-full bg-base-100/10"
+                className="input input-bordered w-full"
               />
-            </div>
-
-            <div>
-              <label className="label text-base-content/80">Gender</label>
               <select
                 value={gender}
                 onChange={(e) => setGender(e.target.value)}
-                className="select select-bordered w-full bg-base-100"
+                className="select select-bordered w-full"
               >
-                <option value="">Select gender</option>
-                <option value="male">male</option>
-                <option value="female">female</option>
-                <option value="other">other</option>
+                <option value="">Select Gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
               </select>
             </div>
-          </div>
 
-          <div>
-            <label className="label text-base-content/80">
-              Profile Photo URL
-            </label>
-            <input
-              type="url"
-              value={photoUrl}
-              onChange={(e) => setPhotoUrl(e.target.value)}
-              className="input input-bordered w-full bg-base-100/10"
-            />
-          </div>
+            {/* Profile Image */}
+            <div className="space-y-2">
+              <label className="font-medium">Profile Picture</label>
 
-          <div>
-            <label className="label text-base-content/80">About</label>
+              {preview && (
+                <div className="flex justify-center">
+                  <img
+                    src={preview}
+                    alt="Preview"
+                    className="w-28 h-28 rounded-full object-cover border"
+                  />
+                </div>
+              )}
+
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="file-input file-input-bordered w-full"
+              />
+            </div>
+
+            {/* About */}
             <textarea
-              rows="3"
+              rows="4"
+              placeholder="Tell something about yourself..."
               value={about}
               onChange={(e) => setAbout(e.target.value)}
-              className="textarea textarea-bordered w-full bg-base-100/10 resize-none"
+              className="textarea textarea-bordered w-full resize-none"
             />
-          </div>
 
-          <div>
-            <label className="label text-base-content/80">Skills</label>
-
-            <div className="flex flex-col sm:flex-row gap-2">
-              <input
-                type="text"
-                value={skillInput}
-                onChange={(e) => setSkillInput(e.target.value)}
-                className="input input-bordered w-full bg-base-100/10"
-                placeholder="Add a skill"
-              />
-
-              <button
-                type="button"
-                onClick={addSkill}
-                className="btn btn-primary w-full sm:w-auto"
-              >
-                Add
-              </button>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap gap-2 mt-3">
-            {skills.map((skill, index) => (
-              <span
-                key={skill}
-                className="badge badge-outline flex items-center gap-2"
-              >
-                {skill}
+            {/* Skills */}
+            <div>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <input
+                  type="text"
+                  placeholder="Add skill"
+                  value={skillInput}
+                  onChange={(e) => setSkillInput(e.target.value)}
+                  className="input input-bordered flex-1"
+                />
                 <button
                   type="button"
-                  onClick={() => removeSkill(index)}
-                  className="text-error font-bold"
+                  onClick={addSkill}
+                  className="btn btn-primary"
                 >
-                  ×
+                  Add
                 </button>
-              </span>
-            ))}
-          </div>
+              </div>
 
-          <div className="flex justify-center lg:justify-end pt-4">
-            <button type="submit" className="btn btn-primary w-full sm:w-auto">
-              Save Profile
+              <div className="flex flex-wrap gap-3 mt-4">
+                {skills.map((skill, index) => (
+                  <span
+                    key={index}
+                    className="badge badge-outline px-4 py-3 text-sm flex items-center gap-2"
+                  >
+                    {skill}
+                    <button
+                      type="button"
+                      onClick={() => removeSkill(index)}
+                      className="text-error font-bold"
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Save Button with Loader */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn btn-primary w-full mt-4"
+            >
+              {loading ? (
+                <span className="loading loading-spinner loading-sm"></span>
+              ) : (
+                "Save Changes"
+              )}
             </button>
-          </div>
-        </form>
-      </div>
+          </form>
+        </div>
 
-      {/* Preview */}
-      <div className="w-full lg:w-auto flex justify-center lg:pt-16">
-        <UserCard
-          user={{
-            firstName,
-            lastName,
-            age,
-            about,
-            photoUrl,
-            gender,
-            skills,
-            memberships
-          }}
-        />
+        {/* ================= PREVIEW CARD ================= */}
+        <div className="w-full lg:w-auto flex justify-center lg:pt-10">
+          <UserCard
+            user={{
+              firstName,
+              lastName,
+              age,
+              about,
+              photoUrl: preview,
+              gender,
+              skills,
+              memberships,
+            }}
+          />
+        </div>
       </div>
     </div>
   );

@@ -50,16 +50,20 @@ const SmartMatches = () => {
     <div className="min-h-screen">
       {/* ================= HERO / INTRO ================= */}
       {!started && (
-        <div className="max-w-3xl mx-auto text-center mt-20">
-          <h1 className="text-3xl sm:text-4xl font-bold mb-4">
-            Discover Developers That Truly Match You
+        <div className="max-w-3xl mx-auto text-center mt-20 flex flex-col justify-center items-center">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight leading-snug mb-4">
+            Discover Developers That {/* Mobile line break */}
+            <span className="block sm:inline">
+              <span className="bg-primary text-primary-content px-2 py-1 rounded-md">
+                Truly Match
+              </span>{" "}
+              You
+            </span>
           </h1>
 
-          <p className="text-gray-400 text-sm sm:text-base mb-8 leading-relaxed">
+          <p className="text-base-content/70 text-sm sm:text-base max-w-xl leading-relaxed mb-6">
             We analyze your skills and compare them with other developers to
             find people who genuinely align with your tech stack.
-            <br />
-            No randomness. No noise. Just meaningful connections.
           </p>
 
           <button
@@ -100,9 +104,9 @@ const SmartMatches = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 px-4 sm:px-8 pb-12">
+          <div className="flex flex-wrap justify-center">
             {matches.map((user) => (
-              <div key={user._id} className="relative group">
+              <div key={user._id} className="relative group m-10">
                 {/* ⭐ MATCH PERCENTAGE BADGE */}
                 <div className="absolute top-3 z-20">
                   <span

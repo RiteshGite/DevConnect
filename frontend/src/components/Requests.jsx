@@ -55,7 +55,7 @@ const Requests = () => {
     );
 
   return (
-    <div className="max-w-3xl mx-auto p-4 min-h-screen mb-32">
+    <div className="max-w-3xl mx-auto p-4 min-h-screen mb-32 mt-10">
       <h2 className="text-2xl font-bold mb-6 text-center">
         Requests
       </h2>
@@ -67,7 +67,7 @@ const Requests = () => {
             className="card bg-base-200 shadow-md flex flex-col sm:flex-row"
           >
             {/* Avatar */}
-            <figure className="p-4 flex justify-center sm:justify-start">
+            <figure className="p-4 flex justify-center sm:justify-start flex-shrink-0">
               <img
                 src={request.fromUserId.photoUrl}
                 alt="profile"

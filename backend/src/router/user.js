@@ -304,7 +304,7 @@ userRouter.get("/user/search", userAuth, async (req, res) => {
             ]
         })
             .select(
-                "firstName lastName photoUrl age gender about skills membershipType"
+                "firstName lastName photoUrl age gender about skills memberships"
             )
             .skip(skip)
             .limit(limit);

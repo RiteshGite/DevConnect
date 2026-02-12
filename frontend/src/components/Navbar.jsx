@@ -8,8 +8,9 @@ import axios from "axios";
 import { removeFeed } from "../utils/feedSlice";
 import { removeConnections } from "../utils/connections";
 import { removeRequests } from "../utils/requests";
-import { Crown } from "lucide-react";
+import { Crown, Sparkles} from "lucide-react";
 import { useState } from "react";
+
 
 const Navbar = () => {
   const [searchText, setSearchText] = useState("");
@@ -134,7 +135,7 @@ const Navbar = () => {
               <li>
                 <Link
                   to="/feed"
-                  className="hover:scale-105 transition-transform duration-200"
+                  className="hover:scale-105 hover:bg-primary hover:text-white transition-transform duration-200"
                 >
                   <Home className="w-4 h-4 sm:w-5 sm:h-5" />
                   Home
@@ -144,7 +145,7 @@ const Navbar = () => {
               <li>
                 <Link
                   to="/profile"
-                  className="hover:scale-105 transition-transform duration-200"
+                  className="hover:scale-105 hover:bg-primary hover:text-white transition-transform duration-200"
                 >
                   <User className="w-4 h-4 sm:w-5 sm:h-5" />
                   Profile
@@ -154,9 +155,9 @@ const Navbar = () => {
               <li>
                 <Link
                   to="/smart-matches"
-                  className="hover:scale-105 transition-transform duration-200"
+                  className="hover:scale-105 hover:bg-primary hover:text-white transition-transform duration-200"
                 >
-                  <Brain className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
                   Smart Matches
                 </Link>
               </li>
@@ -164,7 +165,7 @@ const Navbar = () => {
               <li>
                 <Link
                   to="/connections"
-                  className="hover:scale-105 transition-transform duration-200"
+                  className="hover:scale-105 hover:bg-primary hover:text-white transition-transform duration-200"
                 >
                   <Users className="w-4 h-4 sm:w-5 sm:h-5" />
                   Connections
@@ -174,7 +175,7 @@ const Navbar = () => {
               <li>
                 <Link
                   to="/requests"
-                  className="hover:scale-105 transition-transform duration-200"
+                  className="hover:scale-105 hover:bg-primary hover:text-white transition-transform duration-200"
                 >
                   <Inbox className="w-4 h-4 sm:w-5 sm:h-5" />
                   Requests
@@ -184,7 +185,7 @@ const Navbar = () => {
               <li>
                 <Link
                   to="/membership"
-                  className="hover:scale-105 transition-transform duration-200"
+                  className="hover:scale-105 hover:bg-primary hover:text-white transition-transform duration-200"
                 >
                   <ChessQueen className="w-4 h-4 sm:w-5 sm:h-5" />
                   Membership
@@ -192,7 +193,7 @@ const Navbar = () => {
               </li>
 
               <li onClick={handleLogOut}>
-                <div className="text-error hover:scale-105 transition-transform duration-200">
+                <div className="text-error hover:bg-gray-700 hover:scale-105 hover:font-bold transition-transform duration-200">
                   <LogOut className="w-4 h-4 sm:w-5 sm:h-5" />
                   Logout
                 </div>
